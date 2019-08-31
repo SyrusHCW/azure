@@ -167,7 +167,7 @@
 		"inboundSubnetName": {
 			"type": "string",
 			"metadata": {
-				"description": "Name of the Trust subnet"
+				"description": "Name of the Transit subnet"
 			}
 		},
 
@@ -245,7 +245,7 @@
 
 		// Setup Mgmt Network Interface
 		{
-			"name": "[concat(parameters('virtualMachineName'), copyindex(), '-nic0')]",
+			"name": "[concat(parameters('virtualMachineName'), copyindex(), '-mgmt')]",
 			"type": "Microsoft.Network/networkInterfaces",
 			"location": "[parameters('location')]",
 			"apiVersion": "2015-06-15",
@@ -295,7 +295,7 @@
 		// Setup Untrusted (external) Network Interface for Std LB
 		{
 			"condition": "[equals(parameters('loadBalancerSku'), 'Standard')]", 
-			"name": "[concat(parameters('virtualMachineName'), copyindex(), '-nic1-std')]",
+			"name": "[concat(parameters('virtualMachineName'), copyindex(), '-untrust')]",
 			"type": "Microsoft.Network/networkInterfaces",
 			"dependsOn": [
 				"[concat('Microsoft.Network/publicIPAddresses/', parameters('outboundSubnetName'), '-pip-', copyindex())]"
@@ -352,9 +352,9 @@
 			}
 		},
 
-		// Setup Trusted (internal) Network Interface
+		// Setup Transit (internal) Network Interface
 		{
-			"name": "[concat(parameters('virtualMachineName'), copyindex(), '-nic2')]",
+			"name": "[concat(parameters('virtualMachineName'), copyindex(), '-transit')]",
 			"type": "Microsoft.Network/networkInterfaces",
 			"location": "[parameters('location')]",
 			"apiVersion": "2015-06-15",
@@ -392,9 +392,9 @@
 			"dependsOn": [
 				"[concat('Microsoft.Compute/availabilitySets/', parameters('avSetName'))]",
 				"[concat('Microsoft.Network/publicIPAddresses/', parameters('mgmtPublicIPName'), copyindex())]",
-				"[concat('Microsoft.Network/networkInterfaces/', parameters('virtualMachineName'), copyindex(), '-nic0')]",
-				"[concat('Microsoft.Network/networkInterfaces/', parameters('virtualMachineName'), copyindex(), '-nic1-basic')]",
-				"[concat('Microsoft.Network/networkInterfaces/', parameters('virtualMachineName'), copyindex(), '-nic2')]"
+				"[concat('Microsoft.Network/networkInterfaces/', parameters('virtualMachineName'), copyindex(), '-mgmt')]",
+				"[concat('Microsoft.Network/networkInterfaces/', parameters('virtualMachineName'), copyindex(), '-untrust')]",
+				"[concat('Microsoft.Network/networkInterfaces/', parameters('virtualMachineName'), copyindex(), '-transit')]"
 			],
 			"copy": {
 				"name": "vmLoop",
@@ -466,9 +466,9 @@
 			"apiVersion": "2015-01-01",
 			"dependsOn": [
 				"[concat('Microsoft.Network/publicIPAddresses/', parameters('mgmtPublicIPName'), copyindex())]",
-				"[concat('Microsoft.Network/networkInterfaces/', parameters('virtualMachineName'), copyindex(), '-nic0')]",
-				"[concat('Microsoft.Network/networkInterfaces/', parameters('virtualMachineName'), copyindex(), '-nic1-std')]",
-				"[concat('Microsoft.Network/networkInterfaces/', parameters('virtualMachineName'), copyindex(), '-nic2')]"
+				"[concat('Microsoft.Network/networkInterfaces/', parameters('virtualMachineName'), copyindex(), '-mgmtm')]",
+				"[concat('Microsoft.Network/networkInterfaces/', parameters('virtualMachineName'), copyindex(), '-untrust')]",
+				"[concat('Microsoft.Network/networkInterfaces/', parameters('virtualMachineName'), copyindex(), '-transit')]"
 			],
 			"copy": {
 				"name": "vmLoop",
