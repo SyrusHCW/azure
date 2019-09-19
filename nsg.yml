@@ -2,12 +2,18 @@
   hosts: localhost
   connection: local
   tasks:
-  - name: A50-Network Security Group
+  - name: EUS1-TRANSIT-FW1 Untrust Subnet Security Group
     azure_rm_securitygroup:
-      resource_group: A50-Network-RG
-      name: A50-Network-NIC-NSG
+      resource_group: EUS1-TRANSIT-VNET-RG
+      name: EUS1-Untrust-Subnet-NSG
       state: present # Set to <present> to create or update a security group. Set to <absent> to remove a security group
-      tags: # enter '*' relevant tags
+      location: East US
+      tags:
+        Environment: Production
+        Geo: EUS1
+        Entity: Technology
+        Type: Infrastructure
+        Team: Network
       rules:
         - name: AzureLoadBalancerHealthCheck_Inbound
           priority: 1000
@@ -17,19 +23,19 @@
           destination_address_prefix: '*'
           access: Allow
           direction: Inbound
-        - name: OnPremises_RDP-Inbound
+        - name: HTTPS_Inbound
           priority: 1001
-          destination_port_range: 3389
-          protocol: '*'
-          source_address_prefix: 10.0.0.0/10
+          destination_port_range: 443
+          protocol: 'tcp'
+          source_address_prefix: 1.1.1.1/24
           destination_address_prefix: '*'
           access: Allow
           direction: Inbound
-        - name: ActiveDirectory_LDAP_Inbound
+        - name: HTTPS_Inbound
           priority: 1002
-          destination_port_range: 389
-          protocol: '*'
-          source_address_prefix: '*'
+          destination_port_range: '443'
+          protocol: 'tcp'
+          source_address_prefix: 1.1.1.1/24
           destination_address_prefix: '*'
           access: Allow
           direction: Inbound
