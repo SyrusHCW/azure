@@ -1,0 +1,22 @@
+---
+- name: Apply configuration
+  hosts: localhost
+  connection: local
+  
+
+- name: Create virtual network gateway without bgp settings
+  azure_rm_virtualnetworkgateway:
+    resource_group: EUS1-SB-LAB1-RG
+    name: EUS1-SB-LAB1-RG-vnet-gw
+    subscription_id: '{{ subscription_id }}'
+    secret: '{{ secret }}'
+    tenant: '{{ tenant }}'
+    client_id: '{{ client_id }}'
+    ip_configurations:
+      - name: testipconfig
+        private_ip_allocation_method: Dynamic
+        public_ip_address_name: testipaddr
+    virtual_network: EUS1-SB-LAB1-RG-vnet
+
+
+
